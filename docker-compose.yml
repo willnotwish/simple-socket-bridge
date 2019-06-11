@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  tcp-server:
+    image: 'willnotwish/simple-socket-server:latest'
+    environment:
+      - TCP_PORT=1337
+      - TCP_ADDR=0.0.0.0
+    ports:
+      - '1337:1337'
+
+  unix-socket-server:
+    image: 'willnotwish/simple-socket-server:latest'
+    environment:
+      - UNIX_SOCKET=tmp/simple.sock
+    volumes:
+      - 'bridge:/app/tmp'
+
+  ssh-tunnel:
+    image: willnotwish/ssh-tunnel:latest
+    volumes:
+      - 'bridge:/tmp/bridge'
+    ports:
+      - '2222:22'
+    depends_on:
+      - unix-socket-server
+
+volumes:
+  bridge:
